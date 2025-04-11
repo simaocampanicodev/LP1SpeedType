@@ -55,7 +55,7 @@ namespace SpeedType
 
             for (int i = 0; i < minLength; i++)
             {
-                // ////////// => TO IMPLEMENT <= //////////// //
+                correctChars++;
             }
 
             return (int)((double)correctChars / originalText.Length * 100);

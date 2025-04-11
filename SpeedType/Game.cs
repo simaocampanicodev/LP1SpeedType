@@ -1,16 +1,22 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Spectre.Console;
 
-namespace SimonSays
+namespace SpeedType
 {
     public class Game
     {
         /// <summary>
-        /// The provider responsible for generating the patterns used in the 
-        /// game.
+        /// The provider responsible for generating the sentences for the game.
         /// </summary>
-        private readonly CommandProvider commandProvider;
+        private readonly SentenceProvider sentenceProvider;
+
+        /// <summary>
+        /// The evaluator responsible for calculating the user's performance 
+        /// (WPM and accuracy).
+        /// </summary>
+        private readonly Evaluator evaluator;
 
         /// <summary>
         /// A list to store the last 5 game results for the game stats board.
@@ -19,19 +25,20 @@ namespace SimonSays
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Game"/> class.
-        /// Sets up the command provider, and initializes the game
-        /// stats.
+        /// Sets up the sentence provider, evaluator, and initializes the game 
+        /// stats board.
         /// </summary>
         public Game()
         {
-            commandProvider = new CommandProvider();
-            gameStats = new GameResult[5];  // Um array para armazenar os últimos 5 resultados
+            sentenceProvider = new SentenceProvider();
+            gameStats = new GameResult[5];
         }
 
         /// <summary>
-        /// Displays the main menu of the game and prompts the user to choose
-        /// an option. The available choices are to start the game, view the 
-        /// game stats board, or quit the game.
+        /// Displays the main menu of the game and prompts the user to choose an
+        /// option.
+        /// The available choices are to start the game, view the game stats 
+        /// board, or quit the game.
         /// </summary>
         /// <remarks>
         /// This method uses the <see cref="Spectre.Console"/> library to 
@@ -46,7 +53,7 @@ namespace SimonSays
                 AnsiConsole.Clear();
                 string choice = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
-                        .Title("[bold yellow]Simon Says[/]")
+                        .Title("[bold yellow]Speed Type[/]")
                         .AddChoices("Start Game", "View Game Stats", "Quit"));
 
                 switch (choice)
@@ -58,101 +65,110 @@ namespace SimonSays
                         ShowGameStats();
                         break;
                     case "Quit":
-                        return; 
+                        return;
                 }
             }
         }
 
+        /// <summary>
+        /// Starts a new game round where the player types a randomly generated 
+        /// sentence. The game measures the time taken and the accuracy of the 
+        /// input.
+        /// </summary>
+        /// <remarks>
+        /// In this method, a random sentence is generated using the 
+        /// <see cref="SentenceProvider"/>.
+        /// The player must type the sentence within the given time. After the 
+        /// player submits their input, the game calculates the Words Per Minute
+        /// (WPM) and accuracy, and then records the result in the game stats 
+        /// board. The game stats board only stores the last 5 results.
+        /// </remarks>
         private void StartGame()
         {
-            int round = 1;
+            // The sentence that will be presented to the player.
+            string sentence = sentenceProvider.GetRandomSentence();
+
+            AnsiConsole.Clear();
+            AnsiConsole.MarkupLine("[bold green]Type This Sentence:[/]");
+            AnsiConsole.MarkupLine($"[italic yellow]{sentence}[/]");
+            AnsiConsole.Markup("\n[gray]Press Enter When Ready...[/]");
+            Console.ReadLine();
+
             Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            string userInput = AnsiConsole.Ask<string>("\n[bold cyan]Start" +
+                " Typing:[/] ");
+            stopwatch.Stop();
 
-            while (true)
+            // The time taken by the user to type the sentence.
+            double timeTaken = stopwatch.Elapsed.TotalSeconds;
+
+            // The words per minute (WPM) calculated based on the time taken 
+            // and the user input.
+            double wpm = // ////////// => TO IMPLEMENT <= //////////// //
+
+            // The accuracy percentage calculated based on the user's input and
+            // the original sentence.
+            int accuracy = // ////////// => TO IMPLEMENT <= //////////// //
+
+            // Shift existing entries
+            for (int i = gameStats.Length - 1; i > 0; i--)
             {
-                string pattern = commandProvider.GeneratePattern(round);
-                AnsiConsole.Clear();
-                AnsiConsole.MarkupLine("[bold green]Simon Says Follow this" + 
-                    " Pattern:[/]");
-                AnsiConsole.MarkupLine($"[italic yellow]{pattern}[/]");
-
-                stopwatch.Start();
-                string userInput = AnsiConsole.Ask<string>("\n[bold cyan]Repeat"
-                    + " the Pattern (use W, A, S, D):[/] ");
-                stopwatch.Stop();
-
-                bool isCorrect = userInput.Equals(pattern, StringComparison.OrdinalIgnoreCase);
-
-                if (!isCorrect)
-                {
-                    double timeTaken = stopwatch.Elapsed.TotalSeconds;
-
-                    AnsiConsole.MarkupLine("\n[bold red]You Lost![/]");
-                    AnsiConsole.MarkupLine(
-                        $"[bold]Time Taken:[/] {timeTaken:F2} Seconds");
-                    AnsiConsole.MarkupLine(
-                        $"[bold]You Lost at Round:[/] {round}");
-
-                    // Shift existing entries
-                    for (int i = gameStats.Length - 1; i > 0; i--)
-                    {
-                        gameStats[i] = gameStats[i - 1];
-                    }
-
-                    // Add new result at the beginning
-                    gameStats[0] = new GameResult(pattern, timeTaken, round);
-
-                    AnsiConsole.Markup("\n[bold green]Press Enter to Return to"
-                        + " the Menu...[/]");
-                    Console.ReadLine();
-                    break;
-                }
-
-                round++;
+                gameStats[i] = gameStats[i - 1];
             }
+
+            // Add new result at the beginning
+            gameStats[0] = new GameResult(wpm, accuracy, timeTaken);
+
+            AnsiConsole.MarkupLine("\n[bold yellow]Results:[/]");
+            AnsiConsole.MarkupLine($"[bold]Time Taken:[/] {timeTaken:F2} " +
+                "Seconds");
+            AnsiConsole.MarkupLine(
+                $"[bold]Words Per Minute (WPM):[/] {wpm:F2}");
+            AnsiConsole.MarkupLine($"[bold]Accuracy:[/] {accuracy}%");
+
+            AnsiConsole.Markup("\n[bold green]Press Enter to Return to " +
+                "Menu...[/]");
+            Console.ReadLine();
         }
 
+        /// <summary>
+        /// Displays the game stats board showing the last 5 results with WPM, 
+        /// accuracy, and time taken.
+        /// </summary>
+        /// <remarks>
+        /// This method uses <see cref="Spectre.Console"/> to format and display
+        /// a table with 
+        /// the game stats board results. Each row displays the rank, WPM, 
+        /// accuracy, and time taken for each entry.
+        /// </remarks>
         private void ShowGameStats()
         {
             AnsiConsole.Clear();
             Table table = new Table();
             table.AddColumn("#");
-            table.AddColumn("Round");
+            table.AddColumn("WPM");
+            table.AddColumn("Accuracy");
             table.AddColumn("Time Taken (s)");
-            table.AddColumn("Losing Pattern");
-            
-            int[] eliminationsByRound = new int[10];
-            
-            int roundCounter = 1;
-            foreach (var result in gameStats)
+
+            for (int i = 0; i < gameStats.Length; i++)
             {
-                if (result != null)
+                if (gameStats[i] == null)
                 {
-                    table.AddRow(
-                        roundCounter.ToString(),
-                        result.Round.ToString(),
-                        result.TimeTaken.ToString("F2"),  
-                        result.LosingPattern 
-                    );
-                    if (result.Round <= eliminationsByRound.Length)
-                    {
-                        eliminationsByRound[result.Round - 1]++;
-                    }
-                    roundCounter++;
+                    
                 }
+
+                table.AddRow(
+                    roundCounter.ToString(),
+                    wpm.Round.ToString(),
+                    accuracy.Round.ToString(),
+                    result.TimeTaken.ToString("F2")
+                );
             }
 
             AnsiConsole.Write(table);
-            AnsiConsole.Markup("\n[bold yellow]Number of Eliminations per Round[/]");
-            var chart = new BarChart()
-                .Width(60)
-                .Label("[bold cyan]Eliminations[/]");
-            foreach (var eliminations in eliminationsByRound)
-            {
-                chart.AddItem(eliminations.ToString(), eliminations, Color.Green);
-            }
-            AnsiConsole.Write(chart);
-            AnsiConsole.Markup("\n[bold green]Press Enter to Return to Menu...[/]");
+            AnsiConsole.Markup("\n[bold green]Press Enter to Return to " +
+                "Menu...[/]");
             Console.ReadLine();
         }
     }

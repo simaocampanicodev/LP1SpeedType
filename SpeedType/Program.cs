@@ -1,4 +1,4 @@
-namespace SimonSays
+namespace SpeedType
 {
     /// <summary>
     /// The Program class contains the entry point for the application.

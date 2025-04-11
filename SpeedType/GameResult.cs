@@ -1,19 +1,28 @@
-namespace SimonSays
+namespace SpeedType
 {
     /// <summary>
-    /// Represents the result of a game, including the losing pattern, the time 
-    /// taken to finish, and the round number.
+    /// Represents the result of a game, including the Words Per Minute (WPM),
+    /// accuracy, and the time taken to finish the game.
     /// </summary>
     public class GameResult
     {
         /// <summary>
-        /// Gets the losing pattern for the game.
+        /// Gets the Words Per Minute (WPM) score for the game.
         /// </summary>
         /// <value>
-        /// A <see cref="string"/> representing the losing pattern that caused 
-        /// the loss in the game.
+        /// A <see cref="double"/> representing the WPM score achieved in the 
+        /// game.
         /// </value>
-        public string LosingPattern { get; }
+        public double WPM { get; }
+
+        /// <summary>
+        /// Gets the accuracy score for the game.
+        /// </summary>
+        /// <value>
+        /// An <see cref="int"/> representing the accuracy percentage achieved
+        /// in the game.
+        /// </value>
+        public int Accuracy { get; }
 
         /// <summary>
         /// Gets the time taken to complete the game.
@@ -25,28 +34,21 @@ namespace SimonSays
         public double TimeTaken { get; }
 
         /// <summary>
-        /// Gets the round number of the game.
-        /// </summary>
-        /// <value>
-        /// An <see cref="int"/> representing the round number of the game.
-        /// </value>
-        public int Round { get; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="GameResult"/> class 
-        /// with the specified losing pattern, time taken, and round number.
+        /// with the specified WPM, accuracy, and time taken.
         /// </summary>
-        /// <param name="losingPattern">The pattern that caused the loss in the 
-        /// game, of type <see cref="string"/>.</param>
-        /// <param name="timeTaken">The time taken to complete the game, of 
-        /// type <see cref="double"/> (in seconds).</param>
-        /// <param name="round">The round number of the game, of 
-        /// type <see cref="int"/>.</param>
-        public GameResult(string losingPattern, double timeTaken, int round)
+        /// <param name="wpm">The Words Per Minute score, of type 
+        /// <see cref="double"/>.</param>
+        /// <param name="accuracy">The accuracy percentage, of type 
+        /// <see cref="int"/>.</param>
+        /// <param name="timeTaken">The time taken to complete the game, of type
+        /// <see cref="double"/> (in seconds).</param>
+        public GameResult(double wpm, int accuracy, double timeTaken)
         {
-            LosingPattern = losingPattern;
+            wpm = wpm;
+            accuracy = accuracy;
             TimeTaken = timeTaken;
-            Round = round;
+            
         }
     }
 }
