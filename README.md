@@ -2,7 +2,7 @@
 
 
 
-## Diagrama UML
+## UML Diagram
 
 ```mermaid
 classDiagram
@@ -16,7 +16,7 @@ classDiagram
         +GameResult[] gameStats
         +void StartGame()
         +void ShowMenu()
-        +void Precision()
+        +void ShowPrecision()
         +void ShowGameStats()
     }
 

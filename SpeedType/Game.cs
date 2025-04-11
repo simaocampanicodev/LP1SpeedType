@@ -57,7 +57,7 @@ namespace SpeedType
                 string choice = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
                         .Title("[bold yellow]Speed Type[/]")
-                        .AddChoices("Start Game", "View Game Stats","Precision", "Quit"));
+                        .AddChoices("Start Game", "View Game Stats","View Precision", "Quit"));
 
                 switch (choice)
                 {
@@ -67,7 +67,7 @@ namespace SpeedType
                     case "View Game Stats":
                         ShowGameStats();
                         break;
-                    case "Precision":
+                    case "View Precision":
                         ShowPrecision();
                         break;
                     case "Quit":
@@ -178,34 +178,28 @@ namespace SpeedType
         private void ShowPrecision()
         {
             AnsiConsole.Clear();
-            Table table = new Table();
-            int[] eliminationsByRound = new int[10];
-            
-            int roundCounter = 1;
-            foreach (var result in gameStats)
+            AnsiConsole.MarkupLine("\n[bold yellow]Bar chart:[/]");
+            BarChart barChart = new BarChart().Width(50);
+
+            int[] numbers = new int[11];
+            for (int i = 0; i < gameStats.Length; i++)
             {
-                if (result != null)
-                {
-                    if (result.Accuracy <= eliminationsByRound.Length)
-                    {
-                        eliminationsByRound[result.Accuracy - 1]++;
-                    }
-                    roundCounter++;
-                }
+                if (gameStats[i] == null) break;
+                int pos = gameStats[i].Accuracy / 10;
+                numbers[pos]++;
             }
 
-            AnsiConsole.Write(table);
-            AnsiConsole.Markup("\n[bold yellow]Number of Players per Precision[/]");
-            var chart = new BarChart()
-                .Width(60)
-                .Label("[bold cyan]Amount[/]");
-            foreach (var eliminations in eliminationsByRound)
+            Random rand = new Random();
+            string[] values = new string[11] {"0%-9%", "10%-19%", "20%-29%", "30%-39%", "40%-49%", "50%-59%", "60%-69%", "70%-79%", "80%-89%", "90%-99%", "100%"};
+            for (int i = 0; i < 11; i++)
             {
-                chart.AddItem(eliminations.ToString(), eliminations, Color.Green);
+                barChart.AddItem(values[i], numbers[i], new Color((byte)rand.Next(255, 255), (byte)rand.Next(255, 255), (byte)rand.Next(255, 255)));
             }
-            AnsiConsole.Write(chart);
-            AnsiConsole.Markup("\n[bold green]Press Enter to Return to Menu...[/]");
+            
+            AnsiConsole.Write(barChart);
+            AnsiConsole.Markup("\n[bold green]Press Enter to Return to " +
+                               "Menu...[/]");
             Console.ReadLine();
-        }
+        }  
     }
 }

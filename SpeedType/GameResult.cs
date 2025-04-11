@@ -42,7 +42,7 @@ namespace SpeedType
         /// <param name="accuracy">The accuracy percentage, of type 
         /// <see cref="int"/>.</param>
         /// <param name="timeTaken">The time taken to complete the game, of type
-        /// <see cref="double"/> (in seconds).</param>
+           /// <see cref="double"/> (in seconds).</param>
         public GameResult(double wpm, int accuracy, double timeTaken)
         {
             WPM = wpm;
