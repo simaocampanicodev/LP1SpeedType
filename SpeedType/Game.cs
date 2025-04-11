@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using Humanizer;
 using Spectre.Console;
 
 namespace SpeedType
@@ -32,6 +34,7 @@ namespace SpeedType
         {
             sentenceProvider = new SentenceProvider();
             gameStats = new GameResult[5];
+            evaluator = new Evaluator();
         }
 
         /// <summary>
@@ -86,7 +89,7 @@ namespace SpeedType
         private void StartGame()
         {
             // The sentence that will be presented to the player.
-            string sentence = sentenceProvider.GetRandomSentence();
+            string sentence = new SentenceProvider().GetRandomSentence().Humanize();
 
             AnsiConsole.Clear();
             AnsiConsole.MarkupLine("[bold green]Type This Sentence:[/]");
@@ -105,11 +108,11 @@ namespace SpeedType
 
             // The words per minute (WPM) calculated based on the time taken 
             // and the user input.
-            double wpm = // ////////// => TO IMPLEMENT <= //////////// //
-
+            double wpm = evaluator.CalculateWPM(userInput, timeTaken);
+            
             // The accuracy percentage calculated based on the user's input and
             // the original sentence.
-            int accuracy = // ////////// => TO IMPLEMENT <= //////////// //
+            int accuracy = evaluator.CalculateAccuracy(userInput, sentence);
 
             // Shift existing entries
             for (int i = gameStats.Length - 1; i > 0; i--)
@@ -155,15 +158,12 @@ namespace SpeedType
             {
                 if (gameStats[i] == null)
                 {
-                    
+                    break;
                 }
 
-                table.AddRow(
-                    roundCounter.ToString(),
-                    wpm.Round.ToString(),
-                    accuracy.Round.ToString(),
-                    result.TimeTaken.ToString("F2")
-                );
+                // Add row to table
+                // Table.AddRow() only accepts strings
+                table.AddRow($"{i+1}", $"{gameStats[i].WPM:F2}", $"{gameStats[i].Accuracy}%", $"{gameStats[i].TimeTaken:F2}");
             }
 
             AnsiConsole.Write(table);
