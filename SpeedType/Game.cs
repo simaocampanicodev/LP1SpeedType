@@ -57,7 +57,7 @@ namespace SpeedType
                 string choice = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
                         .Title("[bold yellow]Speed Type[/]")
-                        .AddChoices("Start Game", "View Game Stats", "Quit"));
+                        .AddChoices("Start Game", "View Game Stats","Precision", "Quit"));
 
                 switch (choice)
                 {
@@ -66,6 +66,9 @@ namespace SpeedType
                         break;
                     case "View Game Stats":
                         ShowGameStats();
+                        break;
+                    case "Precision":
+                        ShowPrecision();
                         break;
                     case "Quit":
                         return;
@@ -169,6 +172,39 @@ namespace SpeedType
             AnsiConsole.Write(table);
             AnsiConsole.Markup("\n[bold green]Press Enter to Return to " +
                 "Menu...[/]");
+            Console.ReadLine();
+        }
+
+        private void ShowPrecision()
+        {
+            AnsiConsole.Clear();
+            Table table = new Table();
+            int[] eliminationsByRound = new int[10];
+            
+            int roundCounter = 1;
+            foreach (var result in gameStats)
+            {
+                if (result != null)
+                {
+                    if (result.Accuracy <= eliminationsByRound.Length)
+                    {
+                        eliminationsByRound[result.Accuracy - 1]++;
+                    }
+                    roundCounter++;
+                }
+            }
+
+            AnsiConsole.Write(table);
+            AnsiConsole.Markup("\n[bold yellow]Number of Players per Precision[/]");
+            var chart = new BarChart()
+                .Width(60)
+                .Label("[bold cyan]Amount[/]");
+            foreach (var eliminations in eliminationsByRound)
+            {
+                chart.AddItem(eliminations.ToString(), eliminations, Color.Green);
+            }
+            AnsiConsole.Write(chart);
+            AnsiConsole.Markup("\n[bold green]Press Enter to Return to Menu...[/]");
             Console.ReadLine();
         }
     }

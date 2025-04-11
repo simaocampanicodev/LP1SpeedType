@@ -14,8 +14,9 @@ classDiagram
         +string userInput
         +SentenceProvider sentenceProvider
         +GameResult[] gameStats
-        +void ShowMenu()
         +void StartGame()
+        +void ShowMenu()
+        +void Precision()
         +void ShowGameStats()
     }
 
@@ -39,6 +40,6 @@ classDiagram
 
     Program --> Game
     Game --> Evaluator
+    Game --> GameResult
     Evaluator --> GameResult
     Game --> SentenceProvider
-    GameResult --> Program
