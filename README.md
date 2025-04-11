@@ -1,6 +1,8 @@
 # LP1SpeedType​
 
+## Speed Type 🏎️
 
+### Test if you're fast at typing and find out your accuracy and words per minute by playing with amazing game made with C# in my Programming Languages  class at Lusófona University!
 
 ## UML Diagram
 
